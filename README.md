@@ -1,7 +1,7 @@
 # Pyointillism
 Pyointillism is a python script that takes an image and uses a genetic algorithm to evolve a closer and closer representation of it over time. We start with a random collection of dots in random locations, and all of the children slightly change some of these dots. We then compare the image drawn from these dots to the original, and the one with the smallest difference survives. It is named after pointillism, the art style of drawing images using only dots, as the result ends up looking similar to a painting in that style.
 
-Initially basic shapes appear, but nothing discernable. These are the best performing organisms at 100,200,300,400, and 500. By the end you may be able to guess at the image.<br>
+Initially basic shapes appear, but nothing discernable. These are the best performing organisms at generations 100,200,300,400, and 500. By the end you may be able to guess at the image.<br>
 <img width="150" height="auto" src="http://scholtek.com/pictures/pyointillism/100.png" title="100 generations">
 <img width="150" height="auto" src="http://scholtek.com/pictures/pyointillism/200.png" title="200 generations">
 <img width="150" height="auto" src="http://scholtek.com/pictures/pyointillism/300.png" title="300 generations">
