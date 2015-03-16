@@ -13,7 +13,7 @@ import os
 import sys
 import random
 from copy import deepcopy
-from multiprocessing import Pool
+import multiprocessing
 import jsonpickle
 
 import numpy
@@ -229,7 +229,7 @@ def run(cores,so=None):
     target = globalTarget
 
     #Setup the multiprocessing pool
-    p = Pool(cores)
+#    p = multiprocessing.Pool(cores)
 
     #Create the parent organism (with random genes)
     generation = 1
@@ -244,6 +244,7 @@ def run(cores,so=None):
 
     #Infinite loop (until the process is interrupted)
     while True:
+        p = multiprocessing.Pool(cores)
         #Print the current score and write it to the log file
         print "Generation {} - {}".format(generation,score)
         f.write("Generation {} - {}\n".format(generation,score))
@@ -266,13 +267,17 @@ def run(cores,so=None):
         #Perform the mutations and add to the parent
         results = groupMutate(parent,POP_PER_GENERATION-1,p)
         newScores,newChildren = zip(*results)
+        p.close()
 
         children.extend(newChildren)
         scores.extend(newScores)
 
         #Find the winner
-        score = min(scores)
-        parent = children[scores.index(score)]
+
+        winners = sorted(zip(children,scores),key=lambda x: x[1])
+
+        parent,score = winners[0]
+
 
         #Store a backup to resume running if the program is interrupted
         if generation % 100 == 0:
@@ -295,9 +300,8 @@ def groupMutate(o,number,p):
     """
     Mutates and tests a number of organisms using the multiprocessing module.
     """
-    print o
-#    results = p.map(mutateAndTest,[o]*int(number))
-    results = [mutateAndTest(i) for i in [o]*int(number)]
+    results = p.map(mutateAndTest,[o]*int(number))
+#    results = [mutateAndTest(i) for i in [o]*int(number)]
     return results
         
 #-------------------------------------------------------------------------------------------------
@@ -310,7 +314,7 @@ if __name__ == "__main__":
 
         #Set defaults
 
-        cores = max(1,cpu_count()-1)
+        cores = max(1,multiprocessing.cpu_count()-1)
         so = None
         for i,a in enumerate(args):
             if a == "-t":
