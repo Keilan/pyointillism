@@ -138,12 +138,11 @@ class Organism:
     This organism contains a bunch of genes that draw circles, working together to draw a picture.
     """
     def __init__(self,size,num):
-        self.genes = []
         self.size = size
 
         #Create random genes up to the number given
-        for _ in xrange(num):
-            self.genes.append(Gene(size))
+        self.genes = [Gene(size) for _ in xrange (num)]        
+
 
     def mutate(self):
         #For small numbers of genes, each one has a random chance of mutating
@@ -180,11 +179,8 @@ class Organism:
         """
         Allows us to save an individual organism in case the program is stopped.
         """
-        so = []
-        so.append(generation)
-        for g in self.genes:
-            so.append(g.getSave())
-        return so
+        so = [generation]
+        return so + [g.getSave() for g in self.genes]
 
     def loadSave(self,so):
         """
@@ -229,7 +225,7 @@ def run(cores,so=None):
     target = globalTarget
 
     #Setup the multiprocessing pool
-#    p = multiprocessing.Pool(cores)
+    p = multiprocessing.Pool(cores)
 
     #Create the parent organism (with random genes)
     generation = 1
@@ -244,7 +240,6 @@ def run(cores,so=None):
 
     #Infinite loop (until the process is interrupted)
     while True:
-        p = multiprocessing.Pool(cores)
         #Print the current score and write it to the log file
         print "Generation {} - {}".format(generation,score)
         f.write("Generation {} - {}\n".format(generation,score))
@@ -265,13 +260,18 @@ def run(cores,so=None):
         scores.append(score)
 
         #Perform the mutations and add to the parent
-        results = groupMutate(parent,POP_PER_GENERATION-1,p)
+        try:
+            results = groupMutate(parent,POP_PER_GENERATION-1,p)
+        except KeyboardInterrupt:
+            print 'Bye!'
+            p.close()
+            return
+        
         newScores,newChildren = zip(*results)
         p.close()
 
         children.extend(newChildren)
         scores.extend(newScores)
-
         #Find the winner
 
         winners = sorted(zip(children,scores),key=lambda x: x[1])
@@ -290,11 +290,14 @@ def mutateAndTest(o):
     Given an organism, perform a random mutation on it, and then use the fitness function to
     determine how accurate of a result the mutated offspring draws.
     """
-    c = deepcopy(o)
-    c.mutate()
-    i1 = c.drawImage()
-    i2 = globalTarget
-    return (fitness(i1,i2),c)
+    try:
+        c = deepcopy(o)
+        c.mutate()
+        i1 = c.drawImage()
+        i2 = globalTarget
+        return (fitness(i1,i2),c)
+    except KeyboardInterrupt, e:
+        pass
 
 def groupMutate(o,number,p):
     """
@@ -308,14 +311,14 @@ def groupMutate(o,number,p):
 #Main Function
 #-------------------------------------------------------------------------------------------------
 if __name__ == "__main__":
-    #Check the arguments, options are currents -t (number of threads) and -s (save file)
+    #Set defaults
+    cores = max(1,multiprocessing.cpu_count()-1)
+    so = None
+
+	#Check the arguments, options are currents -t (number of threads) and -s (save file)
     if len(sys.argv) > 1:
         args = sys.argv[1:]
 
-        #Set defaults
-
-        cores = max(1,multiprocessing.cpu_count()-1)
-        so = None
         for i,a in enumerate(args):
             if a == "-t":
                 cores = int(args[i+1])
@@ -323,4 +326,4 @@ if __name__ == "__main__":
                 with open(args[i+1],'r') as save:
                     so = save.read()
 
-        run(cores,so)
+    run(cores,so)
