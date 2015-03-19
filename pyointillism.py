@@ -224,9 +224,6 @@ def run(cores,so=None):
 
     target = globalTarget
 
-    #Setup the multiprocessing pool
-    p = multiprocessing.Pool(cores)
-
     #Create the parent organism (with random genes)
     generation = 1
     parent = Organism(target.size,INITIAL_GENES)
@@ -237,7 +234,8 @@ def run(cores,so=None):
         generation = int(gen)
     prevScore = 101
     score = fitness(parent.drawImage(),target)
-
+    #Setup the multiprocessing pool
+    p = multiprocessing.Pool(cores)
     #Infinite loop (until the process is interrupted)
     while True:
         #Print the current score and write it to the log file
