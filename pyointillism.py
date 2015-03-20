@@ -266,7 +266,6 @@ def run(cores,so=None):
             return
         
         newScores,newChildren = zip(*results)
-        p.close()
 
         children.extend(newChildren)
         scores.extend(newScores)
