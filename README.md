@@ -23,7 +23,7 @@ Finally at 20000,30000, and 40000, we flesh out some of the details. The origina
 <img width="150" height="auto" src="http://scholtek.com/pictures/pyointillism/40000.png" title="40000 generations">
 <img width="150" height="auto" src="http://scholtek.com/pictures/pyointillism/reference.png" title="Reference image">
 
-#Running Pyointillism
+# Running Pyointillism
 The code is stored in a single python script. Download pyointillism.py, and install the dependencies (pil and numpy) using pip. The script will run from the beginning with no arguments, but it expects to find a file named "reference.png" in the same directory that it is running from. It will then create a results/ folder, and output the best performing image every 100 generations, along with a save file to restart from that point (start from where you left off by passing it in with the -s argument).
 
 ```bash
@@ -32,5 +32,5 @@ python pyointillism.py [-t threads] [-s save file]
     -t                               number of threads to use for processing (defaults to all but 1)
     -s                               location of save file to start from
     
-#Purpose
+# Purpose
 Obviously anything produced by this algorithm can be done more quickly and easily with some image manipulation magic. This was created as sort of a simple genetic algorithm example - the code is well commented with general genetic algorithm information and I hope someone can learn something from it (or show me some things I need to learn).
